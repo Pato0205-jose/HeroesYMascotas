@@ -44,6 +44,12 @@ const options = {
 
 const specs = swaggerJsdoc(options);
 
+// Nueva ruta para exponer el JSON de Swagger
+router.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(specs);
+});
+
 router.use('/', swaggerUi.serve, swaggerUi.setup(specs));
 
 export default router; 

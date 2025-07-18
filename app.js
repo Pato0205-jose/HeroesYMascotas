@@ -1,5 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Controladores
 import heroController from './controllers/heroController.js';
@@ -10,9 +13,6 @@ import swaggerRouter from './swagger.js';
 import authMiddleware from './middleware/auth.js';
 import authController from './controllers/authController.js';
 
-import dotenv from 'dotenv';
-dotenv.config();
-import mongoose from 'mongoose';
 
 console.log('MONGODB_URI:', process.env.MONGODB_URI); // <-- Log para depuración
 

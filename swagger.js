@@ -14,7 +14,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3001',
+        url: 'https://heroesymascotas-production-aba1.up.railway.app',
       },
     ],
     tags: [

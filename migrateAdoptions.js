@@ -6,7 +6,7 @@ import Adoption from './models/adoptionModel.js';
 dotenv.config();
 
 async function migrate() {
-  await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(process.env.MONGODB_URI);
   const data = JSON.parse(fs.readFileSync('./data/adoptions.json', 'utf-8'));
   await Adoption.deleteMany({}); // Limpia la colección antes de migrar
   await Adoption.insertMany(data);

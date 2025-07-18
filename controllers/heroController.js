@@ -16,7 +16,7 @@ const router = express.Router();
  *         description: Lista de héroes
  */
 // GET - Obtener todos los héroes
-router.get("/heroes", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const heroes = await heroService.getAllHeroes();
     res.json(heroes);
@@ -54,7 +54,7 @@ router.get("/heroes", async (req, res) => {
  */
 // POST - Agregar un héroe
 router.post(
-  "/heroes",
+  '/',
   [
     check('name').notEmpty().withMessage('El nombre es requerido'),
     check('alias').notEmpty().withMessage('El alias es requerido')

@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
  *         description: Error de validación
  */
 router.post(
-  '/pets',
+  '/',
   [
     check('name').notEmpty().withMessage('El nombre es requerido'),
     check('type').notEmpty().withMessage('El tipo es requerido'),

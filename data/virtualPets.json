@@ -1,0 +1,1 @@
+[{"id":1,"name":"Bolt","ownerId":1,"felicidad":100,"salud":50,"satisfecha":false,"ropa":"sombrero","muerta":false,"enferma":true},{"id":8,"name":"Mamoy","ownerId":6,"felicidad":100,"salud":100,"satisfecha":false,"ropa":null,"muerta":false,"enferma":false},{"id":9,"name":"Mamoy","ownerId":7,"felicidad":100,"salud":0,"satisfecha":true,"ropa":null,"muerta":true,"enferma":false}]

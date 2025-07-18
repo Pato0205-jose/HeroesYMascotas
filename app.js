@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 
 // Controladores
 import heroController from './controllers/heroController.js';
@@ -20,6 +21,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error('Error de conexión:', err));
 
 const app = express();
+app.use(cors());
 
 // Ruta raíz
 app.get('/', (req, res) => {

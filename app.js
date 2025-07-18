@@ -21,6 +21,11 @@ mongoose.connect(process.env.MONGODB_URI)
 
 const app = express();
 
+// Ruta raíz
+app.get('/', (req, res) => {
+  res.send('¡API de Héroes y Mascotas funcionando! Visita /api-docs para la documentación.');
+});
+
 // Middleware
 app.use(express.json());
 

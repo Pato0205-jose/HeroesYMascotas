@@ -13,6 +13,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 import mongoose from 'mongoose';
 
+console.log('MONGODB_URI:', process.env.MONGODB_URI); // <-- Log para depuración
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error de conexión:', err));

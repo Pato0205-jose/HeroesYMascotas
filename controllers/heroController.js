@@ -67,9 +67,7 @@ router.post(
     }
 
     try {
-      const { name, alias, city, team } = req.body;
-      const newHero = new Hero(null, name, alias, city, team);
-      const addedHero = await heroService.addHero(newHero);
+      const addedHero = await heroService.addHero(req.body);
       res.status(201).json(addedHero);
     } catch (error) {
       res.status(500).json({ error: error.message });

@@ -11,7 +11,13 @@ async function addHero(hero) {
     }
 
     const heroes = await heroRepository.getHeroes();
-    const newId = heroes.length > 0 ? Math.max(...heroes.map(h => h.id)) + 1 : 1;
+    
+    // Generar un nuevo ID de manera más robusta
+    let newId = 1;
+    if (heroes.length > 0) {
+        const maxId = Math.max(...heroes.map(h => h.id || 0));
+        newId = maxId + 1;
+    }
     
     // Crear un nuevo documento de Mongoose
     const newHero = new Hero({

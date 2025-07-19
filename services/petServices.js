@@ -7,7 +7,13 @@ async function getAllPets() {
 
 async function addPet(pet, ownerId) {
   const pets = await petRepository.getPets();
-  const newId = pets.length > 0 ? Math.max(...pets.map(p => p.id)) + 1 : 1;
+  
+  // Generar un nuevo ID de manera más robusta
+  let newId = 1;
+  if (pets.length > 0) {
+    const maxId = Math.max(...pets.map(p => p.id || 0));
+    newId = maxId + 1;
+  }
   
   // Crear un nuevo documento de Mongoose
   const newPet = new Pet({

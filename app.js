@@ -33,6 +33,7 @@ app.use(express.json());
 
 // Rutas
 app.use('/api/auth', authController); // Sin authMiddleware aquí
+app.use('/api/heroes', heroController); // Sin authMiddleware para crear héroes
 app.use('/api/pets', authMiddleware, petController);
 app.use('/api', authMiddleware, adoptionController); // proteger adopciones
 app.use('/api/virtual', authMiddleware, virtualPetController); // proteger mascotas virtuales

@@ -2,6 +2,7 @@ import express from "express";
 import { check, validationResult } from 'express-validator';
 import heroService from "../services/heroServices.js";
 import Hero from "../models/heroModel.js";
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ const router = express.Router();
  *       200:
  *         description: Lista de héroes
  */
-// GET - Obtener todos los héroes
+// GET - Obtener todos los héroes (sin autenticación)
 router.get('/', async (req, res) => {
   try {
     const heroes = await heroService.getAllHeroes();
@@ -52,7 +53,7 @@ router.get('/', async (req, res) => {
  *       400:
  *         description: Error de validación
  */
-// POST - Agregar un héroe
+// POST - Agregar un héroe (sin autenticación)
 router.post(
   '/',
   [
@@ -109,8 +110,8 @@ router.post(
  *       404:
  *         description: Héroe no encontrado
  */
-// PUT - Actualizar héroe
-router.put("/heroes/:id", async (req, res) => {
+// PUT - Actualizar héroe (con autenticación)
+router.put("/heroes/:id", authMiddleware, async (req, res) => {
   try {
     const updatedHero = await heroService.updateHero(req.params.id, req.body);
     res.json(updatedHero);
@@ -137,8 +138,8 @@ router.put("/heroes/:id", async (req, res) => {
  *       404:
  *         description: Héroe no encontrado
  */
-// DELETE - Eliminar héroe
-router.delete("/heroes/:id", async (req, res) => {
+// DELETE - Eliminar héroe (con autenticación)
+router.delete("/heroes/:id", authMiddleware, async (req, res) => {
   try {
     const result = await heroService.deleteHero(req.params.id);
     res.json(result);

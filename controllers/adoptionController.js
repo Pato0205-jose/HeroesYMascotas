@@ -53,6 +53,35 @@ router.post('/adopt/:petId', async (req, res) => {
 
 /**
  * @swagger
+ * /api/adoptions:
+ *   get:
+ *     tags: [Adopciones]
+ *     summary: Obtiene todas las adopciones del héroe autenticado
+ *     parameters:
+ *       - in: header
+ *         name: x-hero-id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del héroe autenticado
+ *     responses:
+ *       200:
+ *         description: Lista de adopciones del héroe
+ *       401:
+ *         description: No autorizado
+ */
+// GET: ver todas las adopciones del héroe autenticado
+router.get('/adoptions', async (req, res) => {
+  try {
+    const adoptions = await adoptionService.getAdoptions(req.hero.id);
+    res.json(adoptions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
  * /api/adoptions/{petId}:
  *   get:
  *     tags: [Adopciones]

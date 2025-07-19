@@ -1,4 +1,5 @@
 import petRepository from '../repositories/petRepository.js';
+import Pet from '../models/petModel.js';
 
 async function getAllPets() {
   return await petRepository.getPets();
@@ -7,9 +8,19 @@ async function getAllPets() {
 async function addPet(pet, ownerId) {
   const pets = await petRepository.getPets();
   const newId = pets.length > 0 ? Math.max(...pets.map(p => p.id)) + 1 : 1;
-  const newPet = { ...pet, id: newId, ownerId: Number(ownerId) };
+  
+  // Crear un nuevo documento de Mongoose
+  const newPet = new Pet({
+    id: newId,
+    name: pet.name,
+    type: pet.type,
+    power: pet.power,
+    age: pet.age || 0,
+    adopted: false,
+    ownerId: Number(ownerId)
+  });
 
-  await petRepository.savePets(newPet);
+  await newPet.save();
   return newPet;
 }
 

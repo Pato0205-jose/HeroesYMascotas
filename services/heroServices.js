@@ -1,4 +1,5 @@
 import heroRepository from '../repositories/heroRepository.js';
+import Hero from '../models/heroModel.js';
 
 async function getAllHeroes() {
     return await heroRepository.getHeroes();
@@ -11,9 +12,18 @@ async function addHero(hero) {
 
     const heroes = await heroRepository.getHeroes();
     const newId = heroes.length > 0 ? Math.max(...heroes.map(h => h.id)) + 1 : 1;
-    const newHero = { ...hero, id: newId };
+    
+    // Crear un nuevo documento de Mongoose
+    const newHero = new Hero({
+        id: newId,
+        name: hero.name,
+        alias: hero.alias,
+        city: hero.city || '',
+        team: hero.team || '',
+        powers: hero.powers || []
+    });
 
-    await heroRepository.saveHeroes(newHero);
+    await newHero.save();
     return newHero;
 }
 

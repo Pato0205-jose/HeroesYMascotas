@@ -15,7 +15,7 @@ async function addPet(pet, ownerId) {
     newId = maxId + 1;
   }
   
-  // Crear un nuevo documento de Mongoose
+  // Crear un nuevo documento de Mongoose SIN ownerId inicialmente
   const newPet = new Pet({
     id: newId,
     name: pet.name,
@@ -23,7 +23,7 @@ async function addPet(pet, ownerId) {
     power: pet.power,
     age: pet.age || 0,
     adopted: false,
-    ownerId: Number(ownerId)
+    ownerId: null  // Sin dueño inicialmente
   });
 
   await newPet.save();

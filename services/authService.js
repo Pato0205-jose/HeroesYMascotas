@@ -15,8 +15,13 @@ async function login({ username, password }) {
   if (!hero) throw new Error('Usuario o contraseña incorrectos');
   const valid = await bcrypt.compare(password, hero.password);
   if (!valid) throw new Error('Usuario o contraseña incorrectos');
-  // Devolver el id como token simple
-  return { token: hero.id.toString() };
+  
+  // Usar hero.id si existe, sino usar hero._id como fallback
+  const token = hero.id ? hero.id.toString() : hero._id.toString();
+  return { token };
 }
 
-export default { register, login }; 
+export default {
+  register,
+  login
+}; 

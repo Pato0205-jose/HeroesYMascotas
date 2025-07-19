@@ -31,11 +31,21 @@ async function addPet(pet, ownerId) {
 }
 
 async function updatePet(id, updatedPet) {
-  const pet = await petRepository.findPetById(parseInt(id));
-  if (!pet) throw new Error('Mascota no encontrada');
+  try {
+    // Buscar la mascota por ID
+    const pet = await Pet.findOne({ id: parseInt(id) });
+    if (!pet) throw new Error('Mascota no encontrada');
 
-  delete updatedPet.id;
-  return await petRepository.updatePet(parseInt(id), updatedPet);
+    // Actualizar los campos
+    Object.assign(pet, updatedPet);
+    
+    // Guardar los cambios
+    await pet.save();
+    return pet;
+  } catch (error) {
+    console.error('Error updating pet:', error);
+    throw new Error('Error al actualizar la mascota');
+  }
 }
 
 async function deletePet(id) {

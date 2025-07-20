@@ -105,12 +105,16 @@ async function createVirtualPetFromAdopted(petId) {
     throw new Error('Esta mascota ya existe como mascota virtual');
   }
   
-  // Importar el servicio de adopciones para obtener mascotas adoptadas
-  const adoptionService = await import('./adoptionService.js');
-  const adoptedPets = await adoptionService.default.getAdoptions();
-  const adoptedPet = adoptedPets.find(p => p.id === parseInt(petId));
+  // Importar el servicio de mascotas para verificar si está adoptada
+  const petService = await import('./petServices.js');
+  const allPets = await petService.default.getAllPets();
+  const adoptedPet = allPets.find(p => p.id === parseInt(petId));
   
   if (!adoptedPet) {
+    throw new Error('Mascota no encontrada');
+  }
+  
+  if (!adoptedPet.ownerId || adoptedPet.ownerId === null || adoptedPet.ownerId === undefined) {
     throw new Error('La mascota debe estar adoptada para crear una mascota virtual');
   }
   

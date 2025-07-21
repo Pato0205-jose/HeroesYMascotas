@@ -105,7 +105,7 @@ router.post(
  *       404:
  *         description: Mascota no encontrada
  */
-router.put('/pets/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const pet = await petService.getAllPets().then(pets => pets.find(p => p.id === parseInt(req.params.id)));
     if (!pet || Number(pet.ownerId) !== Number(req.hero.id)) return res.status(404).json({ error: 'Mascota no encontrada' });
@@ -134,7 +134,7 @@ router.put('/pets/:id', async (req, res) => {
  *       404:
  *         description: Mascota no encontrada
  */
-router.delete('/pets/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const pet = await petService.getAllPets().then(pets => pets.find(p => p.id === parseInt(req.params.id)));
     if (!pet || Number(pet.ownerId) !== Number(req.hero.id)) return res.status(404).json({ error: 'Mascota no encontrada' });

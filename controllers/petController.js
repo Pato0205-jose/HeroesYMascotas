@@ -137,7 +137,10 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const pet = await petService.getAllPets().then(pets => pets.find(p => p.id === parseInt(req.params.id)));
-    if (!pet || Number(pet.ownerId) !== Number(req.hero.id)) return res.status(404).json({ error: 'Mascota no encontrada' });
+    if (!pet) return res.status(404).json({ error: 'Mascota no encontrada' });
+    if (pet.ownerId && Number(pet.ownerId) !== Number(req.hero.id)) {
+      return res.status(404).json({ error: 'Mascota no encontrada' });
+    }
     const result = await petService.deletePet(req.params.id);
     res.json(result);
   } catch (err) {

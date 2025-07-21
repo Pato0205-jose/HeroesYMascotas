@@ -109,7 +109,7 @@ router.post(
  *         description: Héroe no encontrado
  */
 // PUT - Actualizar héroe (con autenticación)
-router.put("/heroes/:id", authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const updatedHero = await heroService.updateHero(req.params.id, req.body);
     res.json(updatedHero);
@@ -137,7 +137,7 @@ router.put("/heroes/:id", authMiddleware, async (req, res) => {
  *         description: Héroe no encontrado
  */
 // DELETE - Eliminar héroe (con autenticación)
-router.delete("/heroes/:id", authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const result = await heroService.deleteHero(req.params.id);
     res.json(result);

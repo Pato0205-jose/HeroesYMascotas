@@ -5,7 +5,16 @@ async function register({ username, password, name, alias, powers }) {
   const existing = await Hero.findOne({ username });
   if (existing) throw new Error('El usuario ya existe');
   const hash = await bcrypt.hash(password, 10);
-  const hero = new Hero({ username, password: hash, name, alias, powers });
+
+  // Generar un id incremental igual que en los héroes normales
+  const heroes = await Hero.find();
+  let newId = 1;
+  if (heroes.length > 0) {
+    const maxId = Math.max(...heroes.map(h => h.id || 0));
+    newId = maxId + 1;
+  }
+
+  const hero = new Hero({ id: newId, username, password: hash, name, alias, powers });
   await hero.save();
   return hero;
 }

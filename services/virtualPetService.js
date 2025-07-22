@@ -52,7 +52,7 @@ async function feedPet(id, comida = null) {
   let muerta = pet.muerta;
   if (pet.satisfecha) {
     enferma = true;
-    salud -= 10;
+    salud -= 20; // Daño fatal al sobrealimentar
     if (salud <= 0) {
       salud = 0;
       muerta = true;
@@ -123,7 +123,7 @@ async function createVirtualPetFromAdopted(petId) {
     name: adoptedPet.name,
     ownerId: adoptedPet.ownerId,
     felicidad: 50,  // Permite hacer actividad (no está al máximo)
-    salud: 10,      // Se muere al alimentar (perfecto para testing)
+    salud: 1,       // Se muere con una sola alimentación
     satisfecha: false, // Permite alimentar una vez
     ropa: null,
     muerta: false,

@@ -122,9 +122,9 @@ async function createVirtualPetFromAdopted(petId) {
     id: adoptedPet.id,
     name: adoptedPet.name,
     ownerId: adoptedPet.ownerId,
-    felicidad: 100,
-    salud: 100,
-    satisfecha: false,
+    felicidad: 50,  // Permite hacer actividad (no está al máximo)
+    salud: 10,      // Se muere al alimentar (perfecto para testing)
+    satisfecha: false, // Permite alimentar una vez
     ropa: null,
     muerta: false,
     enferma: false

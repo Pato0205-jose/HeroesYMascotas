@@ -17,8 +17,8 @@ async function assignOwner(petId, heroId) {
     throw new Error(`La mascota ${pet.name} ya tiene un dueño`);
   }
 
-  // Asignar el dueño y actualizar la mascota en MongoDB
-  const updatedPet = { ...pet, ownerId: Number(hero.id) };
+  // Asignar el dueño y marcar como adoptada, actualizar la mascota en MongoDB
+  const updatedPet = { ...pet, ownerId: Number(hero.id), adopted: true };
   await petService.updatePet(petId, updatedPet);
 
   // Verificar que la mascota realmente fue actualizada

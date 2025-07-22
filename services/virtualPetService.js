@@ -69,9 +69,16 @@ async function feedPet(id, comida = null) {
     enferma = true;
     await logActivity(id, 'alimentar', { resultado: 'enferma por sobrealimentación', comida });
   } else {
-    await logActivity(id, 'alimentar', { resultado: 'alimentada', comida });
+    // Con salud inicial de 1, después de alimentar tendrá 11, pero la sobrealimentación la mata
+    if (salud >= 10) {
+      salud = 0;
+      muerta = true;
+      await logActivity(id, 'alimentar', { resultado: 'murió por sobrealimentación', comida });
+    } else {
+      await logActivity(id, 'alimentar', { resultado: 'alimentada', comida });
+    }
   }
-  return await updateVirtualPet(id, { salud, satisfecha, enferma });
+  return await updateVirtualPet(id, { salud, satisfecha, enferma, muerta });
 }
 
 async function dressPet(id, ropa) {

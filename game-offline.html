@@ -290,6 +290,9 @@
             <button class="btn btn-success" onclick="showRegister()">
                 <i class="fas fa-user-plus"></i> Registrarse
             </button>
+            <button class="btn" onclick="createSampleData()" style="background: #6f42c1; margin-top: 10px;">
+                <i class="fas fa-magic"></i> Crear Datos de Ejemplo
+            </button>
         </div>
 
         <!-- Panel de Registro -->
@@ -633,6 +636,13 @@
             nextHeroId = 4;
             nextPetId = 5;
             saveData();
+            
+            // Mostrar mensaje de confirmación
+            showStatus('login-status', '¡Datos de ejemplo creados! Ahora puedes hacer login con: superman/1234, batman/1234, spiderman/1234', 'success');
+            
+            // Limpiar campos
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
         }
 
         // Guardar datos
@@ -1172,6 +1182,10 @@
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
             loadSavedData();
+            
+            // Verificar si los datos se cargaron correctamente
+            console.log('Héroes cargados:', heroes);
+            console.log('Mascotas cargadas:', pets);
             
             const savedHeroId = localStorage.getItem('currentHeroId');
             if (savedHeroId) {

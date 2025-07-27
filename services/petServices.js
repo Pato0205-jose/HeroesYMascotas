@@ -21,7 +21,7 @@ async function addPet(pet, ownerId) {
     name: pet.name,
     type: pet.type,
     power: pet.power,
-    age: pet.age || 0,
+    age: 0, // Edad por defecto
     adopted: false,
     ownerId: null  // Sin dueño inicialmente
   });

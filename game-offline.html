@@ -343,6 +343,9 @@
                 <button class="nav-button btn-danger" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                 </button>
+                <button class="nav-button btn-danger" onclick="resetGame()" style="background: #fd7e14;">
+                    <i class="fas fa-trash"></i> Reiniciar Juego
+                </button>
             </div>
 
             <!-- Sección de Héroes -->
@@ -540,6 +543,11 @@
             adoptions = JSON.parse(localStorage.getItem('adoptions') || '[]');
             virtualPets = JSON.parse(localStorage.getItem('virtualPets') || '[]');
             
+            // Si no hay datos, crear algunos de ejemplo
+            if (heroes.length === 0) {
+                createSampleData();
+            }
+            
             if (heroes.length > 0) {
                 nextHeroId = Math.max(...heroes.map(h => h.id)) + 1;
             }
@@ -549,6 +557,82 @@
             if (virtualPets.length > 0) {
                 nextVirtualPetId = Math.max(...virtualPets.map(v => v.id)) + 1;
             }
+        }
+
+        // Crear datos de ejemplo
+        function createSampleData() {
+            // Crear héroes de ejemplo
+            const sampleHeroes = [
+                {
+                    id: 1,
+                    username: 'superman',
+                    password: '1234',
+                    name: 'Clark Kent',
+                    alias: 'Superman',
+                    city: 'Metrópolis',
+                    team: 'Justice League'
+                },
+                {
+                    id: 2,
+                    username: 'batman',
+                    password: '1234',
+                    name: 'Bruce Wayne',
+                    alias: 'Batman',
+                    city: 'Gotham',
+                    team: 'Justice League'
+                },
+                {
+                    id: 3,
+                    username: 'spiderman',
+                    password: '1234',
+                    name: 'Peter Parker',
+                    alias: 'Spider-Man',
+                    city: 'Nueva York',
+                    team: 'Avengers'
+                }
+            ];
+
+            // Crear mascotas de ejemplo
+            const samplePets = [
+                {
+                    id: 1,
+                    name: 'Krypto',
+                    type: 'Perro',
+                    power: 'Super fuerza y vuelo',
+                    adopted: false,
+                    ownerId: null
+                },
+                {
+                    id: 2,
+                    name: 'Ace',
+                    type: 'Perro',
+                    power: 'Detective canino',
+                    adopted: false,
+                    ownerId: null
+                },
+                {
+                    id: 3,
+                    name: 'Lucky',
+                    type: 'Gato',
+                    power: 'Suerte felina',
+                    adopted: false,
+                    ownerId: null
+                },
+                {
+                    id: 4,
+                    name: 'Tweety',
+                    type: 'Ave',
+                    power: 'Canto mágico',
+                    adopted: false,
+                    ownerId: null
+                }
+            ];
+
+            heroes = sampleHeroes;
+            pets = samplePets;
+            nextHeroId = 4;
+            nextPetId = 5;
+            saveData();
         }
 
         // Guardar datos
@@ -835,12 +919,12 @@
                 id: nextVirtualPetId++,
                 petId: pet.id,
                 nombre: pet.name,
-                salud: 100,
-                felicidad: 100,
-                hambre: 0,
+                salud: 50,  // Empezar con salud media
+                felicidad: 50,  // Empezar con felicidad media
+                hambre: 50,  // Empezar con algo de hambre
                 muerta: false,
                 enferma: false,
-                satisfecha: true
+                satisfecha: false  // Empezar con hambre
             };
 
             virtualPets.push(newVirtualPet);
@@ -939,14 +1023,30 @@
                 return;
             }
 
-            currentVirtualPet.salud = Math.min(100, currentVirtualPet.salud + 20);
-            currentVirtualPet.felicidad = Math.min(100, currentVirtualPet.felicidad + 10);
+            // Lógica más realista: alimentar demasiado puede hacer daño
+            if (currentVirtualPet.satisfecha) {
+                // Si ya está satisfecha, alimentar más hace daño
+                currentVirtualPet.salud = Math.max(0, currentVirtualPet.salud - 15);
+                currentVirtualPet.felicidad = Math.max(0, currentVirtualPet.felicidad - 10);
+                showStatus('pou-status', '¡La mascota ya estaba llena! Alimentarla más le hizo daño.', 'error');
+            } else {
+                // Si tiene hambre, alimentarla es bueno
+                currentVirtualPet.salud = Math.min(100, currentVirtualPet.salud + 15);
+                currentVirtualPet.felicidad = Math.min(100, currentVirtualPet.felicidad + 10);
+                showStatus('pou-status', '¡Mascota alimentada! Se ve más feliz.', 'success');
+            }
+            
             currentVirtualPet.satisfecha = true;
+            
+            // Verificar si murió por sobrealimentación
+            if (currentVirtualPet.salud <= 0) {
+                currentVirtualPet.muerta = true;
+                showStatus('pou-status', '¡La mascota murió por sobrealimentación!', 'error');
+            }
             
             updatePouDisplay();
             saveData();
             document.getElementById('last-activity').textContent = '¡Mascota alimentada!';
-            showStatus('pou-status', '¡Mascota alimentada!', 'success');
         }
 
         function playWithPet() {
@@ -1031,6 +1131,41 @@
                         element.innerHTML = '';
                     }
                 }, 5000);
+            }
+        }
+
+        // Función para degradar automáticamente las mascotas virtuales
+        function degradeVirtualPets() {
+            virtualPets.forEach(pet => {
+                if (!pet.muerta) {
+                    // Degradar salud y felicidad gradualmente
+                    pet.salud = Math.max(0, pet.salud - 2);
+                    pet.felicidad = Math.max(0, pet.felicidad - 1);
+                    
+                    // Si la salud llega a 0, la mascota muere
+                    if (pet.salud <= 0) {
+                        pet.muerta = true;
+                        showStatus('pou-status', `¡${pet.nombre} murió por falta de cuidados!`, 'error');
+                    }
+                    
+                    // Si la salud es baja, se enferma
+                    if (pet.salud < 20 && !pet.enferma) {
+                        pet.enferma = true;
+                        showStatus('pou-status', `¡${pet.nombre} se enfermó!`, 'error');
+                    }
+                }
+            });
+            saveData();
+        }
+
+        // Degradar mascotas cada 30 segundos
+        setInterval(degradeVirtualPets, 30000);
+
+        // Función para reiniciar el juego
+        function resetGame() {
+            if (confirm('¿Estás seguro de que quieres reiniciar el juego? Se perderán todos los datos.')) {
+                localStorage.clear();
+                location.reload();
             }
         }
 

@@ -96,7 +96,32 @@ async function curePet(id) {
   let salud = pet.salud;
   salud = 100;
   await logActivity(id, 'curar', {});
-  return await updateVirtualPet(id, { salud });
+  return await updateVirtualPet(id, { salud, enferma: false });
+}
+
+async function playWithPet(id) {
+  const pet = await getVirtualPetById(id);
+  if (!pet) throw new Error('Mascota virtual no encontrada');
+  if (pet.muerta) throw new Error('La mascota está muerta');
+  
+  let felicidad = Math.min(100, pet.felicidad + 30);
+  let salud = Math.max(0, pet.salud - 5);
+  
+  await logActivity(id, 'jugar', {});
+  return await updateVirtualPet(id, { felicidad, salud });
+}
+
+async function walkPet(id) {
+  const pet = await getVirtualPetById(id);
+  if (!pet) throw new Error('Mascota virtual no encontrada');
+  if (pet.muerta) throw new Error('La mascota está muerta');
+  
+  let felicidad = Math.min(100, pet.felicidad + 20);
+  let salud = Math.min(100, pet.salud + 10);
+  let satisfecha = false;
+  
+  await logActivity(id, 'pasear', {});
+  return await updateVirtualPet(id, { felicidad, salud, satisfecha });
 }
 
 async function checkDead(id) {
@@ -172,6 +197,8 @@ export default {
   feedPet,
   dressPet,
   curePet,
+  playWithPet,
+  walkPet,
   checkDead,
   createVirtualPetFromAdopted,
   getActivityLog,

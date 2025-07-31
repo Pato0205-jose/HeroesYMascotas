@@ -55,6 +55,17 @@ router.post('/virtual-pets', async (req, res) => {
   }
 });
 
+// POST: crear mascota virtual (alias para /virtual-pets)
+router.post('/create', async (req, res) => {
+  try {
+    const { petId } = req.body;
+    const pet = await virtualPetService.createVirtualPetFromAdopted(petId);
+    res.json(pet);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 /**
  * @swagger
  * /api/virtual/virtual-pets/{id}/estado:
@@ -313,6 +324,109 @@ router.post('/virtual-pets/:id/revivir', async (req, res) => {
     const pet = await virtualPetService.getVirtualPetById(req.params.id);
     if (!pet || !checkOwner(pet, req.hero.id)) return res.status(404).json({ error: 'Mascota virtual no encontrada' });
     const updatedPet = await virtualPetService.revivePet(req.params.id);
+    res.json(updatedPet);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Endpoints adicionales para el frontend
+router.get('/pets', async (req, res) => {
+  try {
+    const pets = await virtualPetService.getAllVirtualPets();
+    // Solo mostrar mascotas virtuales del usuario autenticado
+    const myPets = pets.filter(p => Number(p.ownerId) === Number(req.hero.id));
+    res.json(myPets);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/pets/:id', async (req, res) => {
+  try {
+    const pet = await virtualPetService.getVirtualPetById(req.params.id);
+    if (!pet || !checkOwner(pet, req.hero.id)) {
+      return res.status(404).json({ error: 'Mascota virtual no encontrada' });
+    }
+    res.json(pet);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/pets/:id/feed', async (req, res) => {
+  try {
+    const pet = await virtualPetService.getVirtualPetById(req.params.id);
+    if (!pet || !checkOwner(pet, req.hero.id)) {
+      return res.status(404).json({ error: 'Mascota virtual no encontrada' });
+    }
+    const updatedPet = await virtualPetService.feedPet(req.params.id);
+    res.json(updatedPet);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/pets/:id/play', async (req, res) => {
+  try {
+    const pet = await virtualPetService.getVirtualPetById(req.params.id);
+    if (!pet || !checkOwner(pet, req.hero.id)) {
+      return res.status(404).json({ error: 'Mascota virtual no encontrada' });
+    }
+    const updatedPet = await virtualPetService.playWithPet(req.params.id);
+    res.json(updatedPet);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/pets/:id/walk', async (req, res) => {
+  try {
+    const pet = await virtualPetService.getVirtualPetById(req.params.id);
+    if (!pet || !checkOwner(pet, req.hero.id)) {
+      return res.status(404).json({ error: 'Mascota virtual no encontrada' });
+    }
+    const updatedPet = await virtualPetService.walkPet(req.params.id);
+    res.json(updatedPet);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/pets/:id/heal', async (req, res) => {
+  try {
+    const pet = await virtualPetService.getVirtualPetById(req.params.id);
+    if (!pet || !checkOwner(pet, req.hero.id)) {
+      return res.status(404).json({ error: 'Mascota virtual no encontrada' });
+    }
+    const updatedPet = await virtualPetService.curePet(req.params.id);
+    res.json(updatedPet);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/pets/:id/revive', async (req, res) => {
+  try {
+    const pet = await virtualPetService.getVirtualPetById(req.params.id);
+    if (!pet || !checkOwner(pet, req.hero.id)) {
+      return res.status(404).json({ error: 'Mascota virtual no encontrada' });
+    }
+    const updatedPet = await virtualPetService.revivePet(req.params.id);
+    res.json(updatedPet);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/pets/:id/dress', async (req, res) => {
+  try {
+    const pet = await virtualPetService.getVirtualPetById(req.params.id);
+    if (!pet || !checkOwner(pet, req.hero.id)) {
+      return res.status(404).json({ error: 'Mascota virtual no encontrada' });
+    }
+    const { ropa } = req.body;
+    const updatedPet = await virtualPetService.dressPet(req.params.id, ropa);
     res.json(updatedPet);
   } catch (err) {
     res.status(400).json({ error: err.message });

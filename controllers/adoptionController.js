@@ -51,6 +51,41 @@ router.post('/adopt/:petId', async (req, res) => {
   }
 });
 
+// POST: un héroe adopta a una mascota (con petId en el body)
+router.post('/adopt', async (req, res) => {
+  try {
+    console.log('Adopt request body:', req.body);
+    console.log('Hero from middleware:', req.hero);
+    
+    const { petId } = req.body;
+    if (!petId) {
+      return res.status(400).json({ error: 'ID de mascota requerido' });
+    }
+    
+    // Validar que la mascota no tenga dueño y que el id sea válido
+    const pets = await import('../services/petServices.js').then(m => m.default.getAllPets());
+    const pet = (await pets).find(p => p.id === parseInt(petId));
+    if (!pet) return res.status(404).json({ error: 'Mascota no encontrada' });
+    if (pet.adopted) {
+      return res.status(400).json({ error: 'La mascota ya está adoptada' });
+    }
+    
+    const heroId = req.hero.id;
+    console.log('Attempting to adopt pet', petId, 'by hero', heroId);
+    const result = await adoptionService.assignOwner(petId, heroId);
+    res.json({ message: result });
+  } catch (err) {
+    console.error('Adoption error:', err);
+    if (err.message.includes('no encontrada') || err.message.includes('no encontrado')) {
+      res.status(404).json({ error: err.message });
+    } else if (err.message.includes('ya tiene un dueño')) {
+      res.status(400).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: err.message });
+    }
+  }
+});
+
 /**
  * @swagger
  * /api/adoptions:
@@ -72,6 +107,16 @@ router.post('/adopt/:petId', async (req, res) => {
  */
 // GET: ver todas las adopciones del héroe autenticado
 router.get('/adoptions', async (req, res) => {
+  try {
+    const adoptions = await adoptionService.getAdoptions(req.hero.id);
+    res.json(adoptions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET: ver todas las adopciones del héroe autenticado (alias)
+router.get('/my-adoptions', async (req, res) => {
   try {
     const adoptions = await adoptionService.getAdoptions(req.hero.id);
     res.json(adoptions);

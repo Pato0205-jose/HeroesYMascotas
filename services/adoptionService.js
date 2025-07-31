@@ -51,7 +51,12 @@ async function getAdoptions(heroId) {
     .map(p => {
       const owner = heroes.find(h => h.id === p.ownerId);
       return {
-        ...p,
+        id: p.id,
+        petId: p.id,
+        petName: p.name,
+        petType: p.type,
+        heroId: p.ownerId,
+        fecha: new Date().toISOString(),
         ownerAlias: owner ? owner.alias : null
       };
     });

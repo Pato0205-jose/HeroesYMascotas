@@ -75,10 +75,40 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const { token } = await authService.login(req.body);
-    res.json({ token });
+    const { token, hero } = await authService.login(req.body);
+    res.json({ token, hero });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/auth/verify:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Verificar token JWT
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 hero:
+ *                   type: object
+ *       401:
+ *         description: Token inválido
+ */
+router.get('/verify', async (req, res) => {
+  try {
+    const hero = await authService.verifyToken(req.headers.authorization);
+    res.json({ hero });
+  } catch (err) {
+    res.status(401).json({ error: err.message });
   }
 });
 

@@ -1,5 +1,6 @@
 import heroRepository from '../repositories/heroRepository.js';
 import Hero from '../models/heroModel.js';
+import bcrypt from 'bcryptjs';
 
 async function getAllHeroes() {
     return await heroRepository.getHeroes();
@@ -66,11 +67,58 @@ async function faceVillain(heroId, villain) {
     return `${hero.alias} enfrenta a ${villain}`;
 }
 
+async function createSampleData() {
+    // Verificar si ya existen héroes de ejemplo
+    const existingHeroes = await Hero.find({ username: { $in: ['superman', 'batman', 'spiderman'] } });
+    if (existingHeroes.length > 0) {
+        throw new Error('Los datos de ejemplo ya existen');
+    }
+
+    const sampleHeroes = [
+        {
+            id: 1,
+            username: 'superman',
+            password: await bcrypt.hash('1234', 10),
+            name: 'Clark Kent',
+            alias: 'Superman',
+            city: 'Metrópolis',
+            team: 'Justice League',
+            powers: ['Super fuerza', 'Vuelo', 'Visión de rayos X']
+        },
+        {
+            id: 2,
+            username: 'batman',
+            password: await bcrypt.hash('1234', 10),
+            name: 'Bruce Wayne',
+            alias: 'Batman',
+            city: 'Gotham',
+            team: 'Justice League',
+            powers: ['Inteligencia', 'Artes marciales', 'Tecnología']
+        },
+        {
+            id: 3,
+            username: 'spiderman',
+            password: await bcrypt.hash('1234', 10),
+            name: 'Peter Parker',
+            alias: 'Spider-Man',
+            city: 'Nueva York',
+            team: 'Avengers',
+            powers: ['Sentido arácnido', 'Trepar paredes', 'Lanzar telarañas']
+        }
+    ];
+
+    for (const heroData of sampleHeroes) {
+        const hero = new Hero(heroData);
+        await hero.save();
+    }
+}
+
 export default {
     getAllHeroes,
     addHero,
     updateHero,
     deleteHero,
     findHeroesByCity,
-    faceVillain
+    faceVillain,
+    createSampleData
 };

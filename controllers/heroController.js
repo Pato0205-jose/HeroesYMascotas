@@ -146,4 +146,24 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/heroes/sample-data:
+ *   post:
+ *     tags: [Héroes]
+ *     summary: Crear datos de ejemplo
+ *     responses:
+ *       200:
+ *         description: Datos de ejemplo creados
+ */
+// POST - Crear datos de ejemplo
+router.post('/sample-data', async (req, res) => {
+  try {
+    await heroService.createSampleData();
+    res.json({ message: 'Datos de ejemplo creados exitosamente' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

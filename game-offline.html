@@ -323,23 +323,12 @@
         .pou-avatar {
             width: 200px;
             height: 200px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 6rem;
-            color: white;
+            margin: 0 auto 10px;
             position: relative;
             transition: all 0.3s ease;
             cursor: pointer;
-            box-shadow: 0 20px 60px rgba(0,255,255,0.4), inset 0 1px 0 rgba(0,255,255,0.3);
-            border: 4px solid rgba(0,255,255,0.6);
             animation: petIdle 4s ease-in-out infinite;
+            /* Sin fondo ni borde circular - será reemplazado por la imagen real */
         }
 
         /* Clases específicas para el avatar Pou */
@@ -363,20 +352,19 @@
             background-image: url('https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=400&h=400&fit=crop&crop=face');
         }
 
-        /* Imagen real del animal dentro del avatar */
+        /* Imagen real del animal como elemento principal */
         .real-pet-image {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            border-radius: 20px; /* Menos redondeado para mejor visibilidad */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            z-index: 1;
             transition: all 0.3s ease;
+            border: 4px solid rgba(0,255,255,0.6);
+            box-shadow: 0 20px 60px rgba(0,255,255,0.4), inset 0 1px 0 rgba(0,255,255,0.3);
+            position: relative;
+            margin: 0 auto;
         }
 
         /* Imágenes específicas para cada tipo */
@@ -534,43 +522,49 @@
         }
 
         .pou-eyes {
-            position: absolute;
-            top: 35%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1rem;
-            z-index: 4;
+            display: inline-block;
+            font-size: 1.5rem;
+            margin: 5px 10px;
             animation: eyesBlink 4s ease-in-out infinite;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
         @keyframes eyesBlink {
             0%, 90%, 100% { 
-                transform: translateX(-50%) scaleY(1);
+                transform: scaleY(1);
             }
             95% { 
-                transform: translateX(-50%) scaleY(0.1);
+                transform: scaleY(0.1);
             }
         }
 
         .pou-mouth {
-            position: absolute;
-            bottom: 35%;
-            left: 50%;
-            transform: translateX(-50%);
+            display: inline-block;
             font-size: 1.5rem;
-            z-index: 4;
+            margin: 5px 10px;
             animation: mouthWiggle 2s ease-in-out infinite;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        /* Contenedor para los emojis debajo de la imagen */
+        .pou-expressions {
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(26, 26, 46, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(0,255,255,0.3);
         }
 
         @keyframes mouthWiggle {
             0%, 100% { 
-                transform: translateX(-50%) rotate(0deg);
+                transform: rotate(0deg);
             }
             25% { 
-                transform: translateX(-52%) rotate(-1deg);
+                transform: rotate(-2deg);
             }
             75% { 
-                transform: translateX(-48%) rotate(1deg);
+                transform: rotate(2deg);
             }
         }
 
@@ -1180,13 +1174,16 @@
                     <!-- Lado izquierdo: Mascota y estadísticas -->
                     <div class="pou-pet">
                         <div class="pou-avatar" id="pou-avatar" onclick="petPet()">
-                            <!-- Imagen real del animal como fondo -->
+                            <!-- Imagen real del animal como elemento principal -->
                             <div class="real-pet-image" id="real-pet-image"></div>
-                            <div class="pou-eyes" id="pou-eyes">👀</div>
-                            <div class="pou-mouth" id="pou-mouth">😊</div>
                             <div class="particle-effect" id="particle-effect"></div>
                             <!-- Partículas flotantes automáticas -->
                             <div class="ambient-particles" id="ambient-particles"></div>
+                        </div>
+                        <!-- Emojis debajo de la imagen -->
+                        <div class="pou-expressions">
+                            <div class="pou-eyes" id="pou-eyes">👀</div>
+                            <div class="pou-mouth" id="pou-mouth">😊</div>
                         </div>
                         <h4 id="pou-name" style="color: #00ffff; font-weight: bold; text-shadow: 0 0 15px rgba(0, 255, 255, 0.7); margin-bottom: 20px; font-size: 1.5rem;">Cargando...</h4>
                         
@@ -1342,29 +1339,28 @@
             }
         }
 
-        // Funciones de localStorage (como antes)
+        // Funciones de datos de sesión temporal (se guarda en MongoDB pero no persiste localmente)
         function loadSavedData() {
-            heroes = JSON.parse(localStorage.getItem('heroes') || '[]');
-            pets = JSON.parse(localStorage.getItem('pets') || '[]');
-            adoptions = JSON.parse(localStorage.getItem('adoptions') || '[]');
-            virtualPets = JSON.parse(localStorage.getItem('virtualPets') || '[]');
+            // En modo sesión temporal, siempre empezamos con arrays vacíos
+            // Los datos se cargarán desde MongoDB cuando sea necesario
+            heroes = [];
+            pets = [];
+            adoptions = [];
+            virtualPets = [];
             
-            if (heroes.length > 0) {
-                nextHeroId = Math.max(...heroes.map(h => h.id)) + 1;
-            }
-            if (pets.length > 0) {
-                nextPetId = Math.max(...pets.map(p => p.id)) + 1;
-            }
-            if (virtualPets.length > 0) {
-                nextVirtualPetId = Math.max(...virtualPets.map(v => v.id)) + 1;
-            }
+            // IDs empiezan desde 1 en cada sesión
+            nextHeroId = 1;
+            nextPetId = 1;
+            nextVirtualPetId = 1;
+            
+            console.log('🎮 Sesión temporal iniciada - Arrays reiniciados');
         }
 
         function saveData() {
-            localStorage.setItem('heroes', JSON.stringify(heroes));
-            localStorage.setItem('pets', JSON.stringify(pets));
-            localStorage.setItem('adoptions', JSON.stringify(adoptions));
-            localStorage.setItem('virtualPets', JSON.stringify(virtualPets));
+            // En modo sesión temporal, NO guardar en localStorage
+            // Los datos solo existen durante la sesión actual
+            // Pero SÍ se guardan en MongoDB a través de las APIs
+            console.log('💾 Datos guardados solo en MongoDB para esta sesión');
         }
 
         // Función para actualizar el estado de conexión
@@ -1456,20 +1452,20 @@
                 updateConnectionStatus(true);
             } catch (error) {
                 // Fallback a localStorage
-                const hero = heroes.find(h => h.username === username && h.password === password);
-                if (hero) {
-                    currentHeroId = hero.id;
-                    currentHero = hero;
-                    localStorage.setItem('currentHeroId', currentHeroId);
+            const hero = heroes.find(h => h.username === username && h.password === password);
+            if (hero) {
+                currentHeroId = hero.id;
+                currentHero = hero;
+                localStorage.setItem('currentHeroId', currentHeroId);
                     
                     showStatus('login-status', '¡Inicio de sesión exitoso! (Local)', 'success');
-                    
-                    document.getElementById('login-panel').classList.add('hidden');
-                    document.getElementById('game-panel').classList.remove('hidden');
+                
+                document.getElementById('login-panel').classList.add('hidden');
+                document.getElementById('game-panel').classList.remove('hidden');
                     
                     updateConnectionStatus(false);
-                } else {
-                    showStatus('login-status', 'Usuario o contraseña incorrectos', 'error');
+            } else {
+                showStatus('login-status', 'Usuario o contraseña incorrectos', 'error');
                 }
             }
         }
@@ -1501,20 +1497,20 @@
                 showLogin();
             } catch (error) {
                 // Fallback a localStorage
-                const newHero = {
-                    id: nextHeroId++,
-                    username,
-                    password,
-                    name,
-                    alias,
-                    city: '',
-                    team: ''
-                };
+            const newHero = {
+                id: nextHeroId++,
+                username,
+                password,
+                name,
+                alias,
+                city: '',
+                team: ''
+            };
 
-                heroes.push(newHero);
-                saveData();
+            heroes.push(newHero);
+            saveData();
                 showStatus('register-status', '¡Registro exitoso! (Local) Ahora puedes hacer login.', 'success');
-                showLogin();
+            showLogin();
             }
         }
 
@@ -1556,20 +1552,20 @@
                 loadHeroes();
             } catch (error) {
                 // Fallback a localStorage
-                const newHero = {
-                    id: nextHeroId++,
-                    name,
-                    alias,
-                    city,
+            const newHero = {
+                id: nextHeroId++,
+                name,
+                alias,
+                city,
                     team,
                     powers
-                };
+            };
 
-                heroes.push(newHero);
-                saveData();
+            heroes.push(newHero);
+            saveData();
                 showStatus('heroes-status', '¡Héroe creado exitosamente! (Local)', 'success');
-                clearHeroForm();
-                loadHeroes();
+            clearHeroForm();
+            loadHeroes();
             }
         }
 
@@ -1591,16 +1587,16 @@
         async function loadHeroes() {
             try {
                 const heroes = await apiRequest('/heroes');
-                const heroesList = document.getElementById('heroes-list');
-                heroesList.innerHTML = heroes.map(hero => `
-                    <div class="card">
+            const heroesList = document.getElementById('heroes-list');
+            heroesList.innerHTML = heroes.map(hero => `
+                <div class="card">
                         <div class="hero-avatar avatar-hero">
                             ${getHeroAvatar(hero)}
-                        </div>
-                        <h3>${hero.name}</h3>
-                        <div><strong>Alias:</strong> ${hero.alias}</div>
-                        <div><strong>Ciudad:</strong> ${hero.city || 'No especificada'}</div>
-                        <div><strong>Equipo:</strong> ${hero.team || 'Sin equipo'}</div>
+                    </div>
+                    <h3>${hero.name}</h3>
+                    <div><strong>Alias:</strong> ${hero.alias}</div>
+                    <div><strong>Ciudad:</strong> ${hero.city || 'No especificada'}</div>
+                    <div><strong>Equipo:</strong> ${hero.team || 'Sin equipo'}</div>
                         <div><strong>Poderes:</strong> ${hero.powers ? hero.powers.join(', ') : 'Sin poderes'}</div>
                         <div><strong>ID:</strong> ${hero.id}</div>
                     </div>
@@ -1618,9 +1614,9 @@
                         <div><strong>Ciudad:</strong> ${hero.city || 'No especificada'}</div>
                         <div><strong>Equipo:</strong> ${hero.team || 'Sin equipo'}</div>
                         <div><strong>Poderes:</strong> ${hero.powers ? hero.powers.join(', ') : 'Sin poderes'}</div>
-                        <div><strong>ID:</strong> ${hero.id}</div>
-                    </div>
-                `).join('');
+                    <div><strong>ID:</strong> ${hero.id}</div>
+                </div>
+            `).join('');
             }
         }
 
@@ -1649,9 +1645,9 @@
                     body: JSON.stringify({ name, type, power })
                 });
 
-                showStatus('pets-status', '¡Mascota creada exitosamente!', 'success');
-                clearPetForm();
-                loadPets();
+            showStatus('pets-status', '¡Mascota creada exitosamente!', 'success');
+            clearPetForm();
+            loadPets();
             } catch (error) {
                 showStatus('pets-status', error.message || 'Error al crear mascota', 'error');
             }
@@ -1684,19 +1680,19 @@
         async function loadPets() {
             try {
                 const pets = await apiRequest('/pets');
-                const petsList = document.getElementById('pets-list');
-                petsList.innerHTML = pets.map(pet => `
-                    <div class="card">
+            const petsList = document.getElementById('pets-list');
+            petsList.innerHTML = pets.map(pet => `
+                <div class="card">
                         <div class="pet-avatar ${getPetAvatarClass(pet)}">
                             ${getPetAvatar(pet)}
-                        </div>
-                        <h3>${pet.name}</h3>
-                        <div><strong>Tipo:</strong> ${pet.type}</div>
-                        <div><strong>Poder:</strong> ${pet.power || 'Sin poder'}</div>
-                        <div><strong>ID:</strong> ${pet.id}</div>
-                        <div><strong>Estado:</strong> ${pet.adopted ? 'Adoptada' : 'Disponible'}</div>
                     </div>
-                `).join('');
+                    <h3>${pet.name}</h3>
+                    <div><strong>Tipo:</strong> ${pet.type}</div>
+                    <div><strong>Poder:</strong> ${pet.power || 'Sin poder'}</div>
+                    <div><strong>ID:</strong> ${pet.id}</div>
+                    <div><strong>Estado:</strong> ${pet.adopted ? 'Adoptada' : 'Disponible'}</div>
+                </div>
+            `).join('');
             } catch (error) {
                 showStatus('pets-status', error.message || 'Error al cargar mascotas', 'error');
             }
@@ -1723,9 +1719,9 @@
                     body: JSON.stringify({ petId })
                 });
 
-                showStatus('adoptions-status', '¡Mascota adoptada exitosamente!', 'success');
-                document.getElementById('adopt-pet-id').value = '';
-                loadMyAdoptions();
+            showStatus('adoptions-status', '¡Mascota adoptada exitosamente!', 'success');
+            document.getElementById('adopt-pet-id').value = '';
+            loadMyAdoptions();
             } catch (error) {
                 showStatus('adoptions-status', error.message || 'Error al adoptar mascota', 'error');
             }
@@ -1734,18 +1730,18 @@
         async function loadMyAdoptions() {
             try {
                 const adoptions = await apiRequest('/my-adoptions');
-                const adoptionsList = document.getElementById('adoptions-list');
+            const adoptionsList = document.getElementById('adoptions-list');
                 adoptionsList.innerHTML = adoptions.map(adoption => `
-                    <div class="card">
-                        <div class="pet-avatar">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <h3>${adoption.petName}</h3>
-                        <div><strong>Tipo:</strong> ${adoption.petType}</div>
-                        <div><strong>Fecha:</strong> ${new Date(adoption.fecha).toLocaleDateString()}</div>
-                        <div><strong>ID Mascota:</strong> ${adoption.petId}</div>
+                <div class="card">
+                    <div class="pet-avatar">
+                        <i class="fas fa-heart"></i>
                     </div>
-                `).join('');
+                    <h3>${adoption.petName}</h3>
+                    <div><strong>Tipo:</strong> ${adoption.petType}</div>
+                    <div><strong>Fecha:</strong> ${new Date(adoption.fecha).toLocaleDateString()}</div>
+                    <div><strong>ID Mascota:</strong> ${adoption.petId}</div>
+                </div>
+            `).join('');
             } catch (error) {
                 showStatus('adoptions-status', error.message || 'Error al cargar adopciones', 'error');
             }
@@ -1766,9 +1762,9 @@
                     body: JSON.stringify({ petId })
                 });
 
-                showStatus('virtual-pets-status', '¡Mascota virtual creada exitosamente!', 'success');
-                document.getElementById('virtual-pet-id').value = '';
-                loadVirtualPets();
+            showStatus('virtual-pets-status', '¡Mascota virtual creada exitosamente!', 'success');
+            document.getElementById('virtual-pet-id').value = '';
+            loadVirtualPets();
             } catch (error) {
                 showStatus('virtual-pets-status', error.message || 'Error al crear mascota virtual', 'error');
             }
@@ -1777,38 +1773,38 @@
         async function loadVirtualPets() {
             try {
                 const virtualPets = await apiRequest('/virtual/pets');
-                const virtualPetsList = document.getElementById('virtual-pets-list');
-                
+            const virtualPetsList = document.getElementById('virtual-pets-list');
+            
                 if (virtualPets.length === 0) {
-                    virtualPetsList.innerHTML = `
-                        <div class="card">
-                            <div class="pet-avatar">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                            <h3>No tienes mascotas virtuales</h3>
-                            <p>Crea una mascota virtual desde una mascota adoptada</p>
+                virtualPetsList.innerHTML = `
+                    <div class="card">
+                        <div class="pet-avatar">
+                            <i class="fas fa-robot"></i>
                         </div>
-                    `;
-                } else {
+                        <h3>No tienes mascotas virtuales</h3>
+                        <p>Crea una mascota virtual desde una mascota adoptada</p>
+                    </div>
+                `;
+            } else {
                     virtualPetsList.innerHTML = virtualPets.map(pet => {
                         const originalPet = pets.find(p => p.id === pet.id);
                         const avatar = originalPet ? getPetAvatar(originalPet) : '🐾';
                         const avatarClass = originalPet ? getPetAvatarClass(originalPet) : 'avatar-pet-other';
                         
                         return `
-                            <div class="card" onclick="openPouPanel(${pet.id})" style="cursor: pointer;">
+                    <div class="card" onclick="openPouPanel(${pet.id})" style="cursor: pointer;">
                                 <div class="pet-avatar ${avatarClass}">
                                     ${avatar}
-                                </div>
+                        </div>
                                 <h3>${pet.name}</h3>
-                                <div><strong>Salud:</strong> ${pet.salud}/100</div>
-                                <div><strong>Felicidad:</strong> ${pet.felicidad}/100</div>
-                                <div><strong>Estado:</strong> ${pet.muerta ? 'Muerta' : pet.enferma ? 'Enferma' : 'Sana'}</div>
-                                <div><strong>ID:</strong> ${pet.id}</div>
-                                <button class="btn btn-success" onclick="event.stopPropagation(); openPouPanel(${pet.id})">
-                                    <i class="fas fa-play"></i> Cuidar
-                                </button>
-                            </div>
+                        <div><strong>Salud:</strong> ${pet.salud}/100</div>
+                        <div><strong>Felicidad:</strong> ${pet.felicidad}/100</div>
+                        <div><strong>Estado:</strong> ${pet.muerta ? 'Muerta' : pet.enferma ? 'Enferma' : 'Sana'}</div>
+                        <div><strong>ID:</strong> ${pet.id}</div>
+                        <button class="btn btn-success" onclick="event.stopPropagation(); openPouPanel(${pet.id})">
+                            <i class="fas fa-play"></i> Cuidar
+                        </button>
+                    </div>
                         `;
                     }).join('');
                 }
@@ -1884,7 +1880,7 @@
             avatar.className = 'pou-avatar';
             
             // Determinar qué mascota mostrar basado en el tipo original
-            const originalPet = pets.find(p => p.id === currentVirtualPet.id);
+            const originalPet = pets.find(p => p.id === currentVirtualPet.petId);
             if (originalPet) {
                 // Limpiar clases anteriores
                 if (petBody) petBody.className = 'virtual-pet-body';
@@ -1927,7 +1923,14 @@
                 if (realPetImage) realPetImage.style.opacity = '0.5';
             } else if (currentVirtualPet.enferma) {
                 if (avatar) avatar.style.filter = 'sepia(50%)';
-                if (avatar) avatar.style.background = 'linear-gradient(145deg, #dc3545, #c82333)';
+                // NO cambiar fondo cuando hay imagen real
+                if (avatar && !avatar.classList.contains('pou-avatar-dog') && 
+                    !avatar.classList.contains('pou-avatar-cat') && 
+                    !avatar.classList.contains('pou-avatar-bird') && 
+                    !avatar.classList.contains('pou-avatar-reptile') && 
+                    !avatar.classList.contains('pou-avatar-other')) {
+                    avatar.style.background = 'linear-gradient(145deg, #dc3545, #c82333)';
+                }
                 if (eyes) eyes.textContent = '😷😷';
                 if (mouth) mouth.textContent = '🤒';
                 if (petBody) petBody.style.opacity = '0.8';
@@ -1937,21 +1940,46 @@
                 if (petBody) petBody.style.opacity = '1';
                 if (realPetImage) realPetImage.style.opacity = '1';
                 
-                // Expresiones según estadísticas
+                // Expresiones según estadísticas (SIN cambiar el fondo cuando hay imagen real)
                 if (currentVirtualPet.felicidad >= 80) {
-                    if (avatar) avatar.style.background = 'linear-gradient(145deg, #28a745, #20c997)';
+                    // Solo cambiar fondo si NO hay imagen real (cuando no tiene clases de animal)
+                    if (avatar && !avatar.classList.contains('pou-avatar-dog') && 
+                        !avatar.classList.contains('pou-avatar-cat') && 
+                        !avatar.classList.contains('pou-avatar-bird') && 
+                        !avatar.classList.contains('pou-avatar-reptile') && 
+                        !avatar.classList.contains('pou-avatar-other')) {
+                        avatar.style.background = 'linear-gradient(145deg, #28a745, #20c997)';
+                    }
                     if (eyes) eyes.textContent = '😊😊';
                     if (mouth) mouth.textContent = '😄';
                 } else if (currentVirtualPet.felicidad >= 50) {
-                    if (avatar) avatar.style.background = 'linear-gradient(145deg, #667eea, #764ba2)';
+                    if (avatar && !avatar.classList.contains('pou-avatar-dog') && 
+                        !avatar.classList.contains('pou-avatar-cat') && 
+                        !avatar.classList.contains('pou-avatar-bird') && 
+                        !avatar.classList.contains('pou-avatar-reptile') && 
+                        !avatar.classList.contains('pou-avatar-other')) {
+                        avatar.style.background = 'linear-gradient(145deg, #667eea, #764ba2)';
+                    }
                     if (eyes) eyes.textContent = '👀👀';
                     if (mouth) mouth.textContent = '😊';
                 } else if (currentVirtualPet.felicidad >= 20) {
-                    if (avatar) avatar.style.background = 'linear-gradient(145deg, #ffc107, #fd7e14)';
+                    if (avatar && !avatar.classList.contains('pou-avatar-dog') && 
+                        !avatar.classList.contains('pou-avatar-cat') && 
+                        !avatar.classList.contains('pou-avatar-bird') && 
+                        !avatar.classList.contains('pou-avatar-reptile') && 
+                        !avatar.classList.contains('pou-avatar-other')) {
+                        avatar.style.background = 'linear-gradient(145deg, #ffc107, #fd7e14)';
+                    }
                     if (eyes) eyes.textContent = '😐😐';
                     if (mouth) mouth.textContent = '😕';
                 } else {
-                    if (avatar) avatar.style.background = 'linear-gradient(145deg, #dc3545, #c82333)';
+                    if (avatar && !avatar.classList.contains('pou-avatar-dog') && 
+                        !avatar.classList.contains('pou-avatar-cat') && 
+                        !avatar.classList.contains('pou-avatar-bird') && 
+                        !avatar.classList.contains('pou-avatar-reptile') && 
+                        !avatar.classList.contains('pou-avatar-other')) {
+                        avatar.style.background = 'linear-gradient(145deg, #dc3545, #c82333)';
+                    }
                     if (eyes) eyes.textContent = '😢😢';
                     if (mouth) mouth.textContent = '😭';
                 }
@@ -2033,14 +2061,14 @@
                 });
                 
                 currentVirtualPet = updatedPet;
-                updatePouDisplay();
+            updatePouDisplay();
                 document.getElementById('last-activity').textContent = `¡Mascota vestida con ${clothingType}!`;
                 showStatus('pou-status', `¡Mascota vestida con ${clothingType}!`, 'success');
                 toggleClothingSelector();
             } catch (error) {
                 // Fallback a localStorage
                 currentVirtualPet.ropa = clothingType;
-                saveData();
+            saveData();
                 updatePouDisplay();
                 document.getElementById('last-activity').textContent = `¡Mascota vestida con ${clothingType}!`;
                 showStatus('pou-status', `¡Mascota vestida con ${clothingType}! (Local)`, 'success');
@@ -2342,10 +2370,10 @@
                 });
                 
                 currentVirtualPet = updatedPet;
-                updatePouDisplay();
-                document.getElementById('last-activity').textContent = '¡Jugaste con tu mascota!';
+            updatePouDisplay();
+            document.getElementById('last-activity').textContent = '¡Jugaste con tu mascota!';
                 playAnimation('happy');
-                showStatus('pou-status', '¡Jugaste con tu mascota!', 'success');
+            showStatus('pou-status', '¡Jugaste con tu mascota!', 'success');
             } catch (error) {
                 playAnimation('sad');
                 showStatus('pou-status', error.message || 'Error al jugar con mascota', 'error');
@@ -2366,10 +2394,10 @@
                 });
                 
                 currentVirtualPet = updatedPet;
-                updatePouDisplay();
-                document.getElementById('last-activity').textContent = '¡Paseaste con tu mascota!';
+            updatePouDisplay();
+            document.getElementById('last-activity').textContent = '¡Paseaste con tu mascota!';
                 playAnimation('happy');
-                showStatus('pou-status', '¡Paseaste con tu mascota!', 'success');
+            showStatus('pou-status', '¡Paseaste con tu mascota!', 'success');
             } catch (error) {
                 playAnimation('sad');
                 showStatus('pou-status', error.message || 'Error al pasear mascota', 'error');
@@ -2389,10 +2417,10 @@
                 });
                 
                 currentVirtualPet = updatedPet;
-                updatePouDisplay();
-                document.getElementById('last-activity').textContent = '¡Mascota curada!';
+            updatePouDisplay();
+            document.getElementById('last-activity').textContent = '¡Mascota curada!';
                 playAnimation('happy');
-                showStatus('pou-status', '¡Mascota curada!', 'success');
+            showStatus('pou-status', '¡Mascota curada!', 'success');
             } catch (error) {
                 playAnimation('sad');
                 showStatus('pou-status', error.message || 'Error al curar mascota', 'error');
@@ -2413,10 +2441,10 @@
                 });
                 
                 currentVirtualPet = updatedPet;
-                updatePouDisplay();
-                document.getElementById('last-activity').textContent = '¡Mascota revivida!';
+            updatePouDisplay();
+            document.getElementById('last-activity').textContent = '¡Mascota revivida!';
                 playAnimation('happy');
-                showStatus('pou-status', '¡Mascota revivida!', 'success');
+            showStatus('pou-status', '¡Mascota revivida!', 'success');
             } catch (error) {
                 playAnimation('sad');
                 showStatus('pou-status', error.message || 'Error al revivir mascota', 'error');
@@ -2545,42 +2573,62 @@
             }
         }
 
-        // Inicialización
+                // Función para limpiar sesión y datos
+        function clearGameSession() {
+            // Limpiar tokens y sesión
+            localStorage.removeItem('token');
+            localStorage.removeItem('currentHeroId');
+            
+            // LIMPIAR TODOS los datos de sesión para que cada sesión sea independiente
+            localStorage.removeItem('heroes');
+            localStorage.removeItem('pets');
+            localStorage.removeItem('adoptions');
+            localStorage.removeItem('virtualPets');
+            
+            // Resetear arrays locales para sesión limpia
+            heroes = [];
+            pets = [];
+            adoptions = [];
+            virtualPets = [];
+            
+            // Resetear variables globales
+            token = null;
+            currentHeroId = null;
+            currentHero = null;
+            currentVirtualPet = null;
+            currentVirtualPetId = null;
+            
+            // Asegurar que se muestre el panel de login
+            document.getElementById('game-panel').classList.add('hidden');
+            document.getElementById('pou-panel').classList.add('hidden');
+            document.getElementById('login-panel').classList.remove('hidden');
+            document.getElementById('register-panel').classList.add('hidden');
+        }
+
+        // Limpiar sesión cuando se cierre la pestaña/ventana
+        window.addEventListener('beforeunload', function() {
+            clearGameSession();
+        });
+
+        // También limpiar si la página se oculta (cambio de pestaña)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Opcional: limpiar cuando se cambie de pestaña
+                // clearGameSession();
+            }
+        });
+
+        // Inicialización - SIEMPRE COMENZAR DESDE LOGIN
         document.addEventListener('DOMContentLoaded', function() {
+            // Limpiar cualquier sesión anterior
+            clearGameSession();
+            
+            // Cargar datos base pero sin iniciar sesión automáticamente
             loadSavedData();
             checkConnection();
             
-            // Verificar si hay un token guardado
-            const savedToken = localStorage.getItem('token');
-            const savedHeroId = localStorage.getItem('currentHeroId');
-            
-            if (savedToken && savedHeroId) {
-                token = savedToken;
-                currentHeroId = parseInt(savedHeroId);
-                
-                // Verificar si el token sigue siendo válido
-                apiRequest('/auth/verify')
-                    .then(response => {
-                        currentHero = response.hero;
-                        document.getElementById('login-panel').classList.add('hidden');
-                        document.getElementById('game-panel').classList.remove('hidden');
-                        updateConnectionStatus(true);
-                    })
-                    .catch(() => {
-                        // Token inválido, verificar si existe en localStorage
-                        const hero = heroes.find(h => h.id === currentHeroId);
-                        if (hero) {
-                            currentHero = hero;
-                            document.getElementById('login-panel').classList.add('hidden');
-                            document.getElementById('game-panel').classList.remove('hidden');
-                            updateConnectionStatus(false);
-                        } else {
-                            localStorage.removeItem('token');
-                            localStorage.removeItem('currentHeroId');
-                            updateConnectionStatus(false);
-                        }
-                    });
-            }
+            // Mostrar mensaje de bienvenida con modo temporal
+            showStatus('login-status', '🎮 Modo Sesión Temporal - Los datos solo existirán durante esta sesión. ¡Inicia sesión o regístrate!', 'info');
         });
     </script>
 </body>

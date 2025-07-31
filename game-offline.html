@@ -356,43 +356,36 @@
         .real-pet-image {
             width: 200px;
             height: 200px;
-            border-radius: 20px; /* Menos redondeado para mejor visibilidad */
+            border-radius: 20px;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            transition: all 0.3s ease;
             border: 4px solid rgba(0,255,255,0.6);
-            box-shadow: 0 20px 60px rgba(0,255,255,0.4), inset 0 1px 0 rgba(0,255,255,0.3);
-            position: relative;
+            box-shadow: 0 20px 60px rgba(0,255,255,0.4);
             margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: white;
-            text-shadow: 0 0 10px rgba(0,0,0,0.7);
-            background: linear-gradient(145deg, #667eea, #764ba2);
+            /* FORZAR que aparezca la imagen */
+            background-image: url('img/perro.jpeg') !important;
         }
 
-        /* Imágenes específicas para cada tipo */
+        /* Imágenes específicas para cada tipo - LOCALES */
         .real-pet-dog {
-            background-image: url('https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop&crop=face');
+            background-image: url('img/perro.jpeg');
         }
 
         .real-pet-cat {
-            background-image: url('https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop&crop=face');
+            background-image: url('img/gato.jpeg');
         }
 
         .real-pet-bird {
-            background-image: url('https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=300&h=300&fit=crop&crop=face');
+            background-image: url('img/ave.png');
         }
 
         .real-pet-reptile {
-            background-image: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=300&fit=crop&crop=face');
+            background-image: url('img/reptil.jpeg');
         }
 
         .real-pet-other {
-            background-image: url('https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=300&h=300&fit=crop&crop=face');
+            background-image: url('img/perro.jpeg'); /* Usar perro como default */
         }
 
         /* Animación de respiración/latido cuando está idle */
@@ -1755,14 +1748,19 @@
             }
 
             try {
-                await apiRequest('/virtual/create', {
+                const newPet = await apiRequest('/virtual/create', {
                     method: 'POST',
                     body: JSON.stringify({ petId })
                 });
 
             showStatus('virtual-pets-status', '¡Mascota virtual creada exitosamente!', 'success');
             document.getElementById('virtual-pet-id').value = '';
-            loadVirtualPets();
+                
+                // Abrir automáticamente el panel de la mascota recién creada
+                setTimeout(() => {
+                    openPouPanel(newPet.id);
+                }, 500);
+                
             } catch (error) {
                 showStatus('virtual-pets-status', error.message || 'Error al crear mascota virtual', 'error');
             }
@@ -1914,10 +1912,32 @@
                     'Otro': '🐾'
                 };
                 
-                if (realPetImage) {
-                    realPetImage.classList.add(realPetClass);
-                    // Mostrar emoji del tipo de mascota
-                    realPetImage.textContent = petEmojis[originalPet.type] || '🐾';
+                                if (realPetImage) {
+                    // Limpiar todo
+                    realPetImage.className = 'real-pet-image';
+                    realPetImage.textContent = '';
+                    
+                    console.log('🐕 Tipo de mascota:', originalPet.type);
+                    
+                    // Poner directamente la imagen según el tipo
+                    if (originalPet.type === 'Perro') {
+                        realPetImage.style.backgroundImage = 'url(img/perro.jpeg)';
+                        console.log('✅ Imagen aplicada: perro.jpeg');
+                    } else if (originalPet.type === 'Gato') {
+                        realPetImage.style.backgroundImage = 'url(img/gato.jpeg)';
+                        console.log('✅ Imagen aplicada: gato.jpeg');
+                    } else if (originalPet.type === 'Ave') {
+                        realPetImage.style.backgroundImage = 'url(img/ave.png)';
+                        console.log('✅ Imagen aplicada: ave.png');
+                    } else if (originalPet.type === 'Reptil') {
+                        realPetImage.style.backgroundImage = 'url(img/reptil.jpeg)';
+                        console.log('✅ Imagen aplicada: reptil.jpeg');
+                    } else {
+                        realPetImage.style.backgroundImage = 'url(img/perro.jpeg)';
+                        console.log('✅ Imagen aplicada: perro.jpeg (default)');
+                    }
+                } else {
+                    console.log('❌ No se encontró realPetImage element');
                 }
                 avatar.classList.add(avatarClass);
                 
@@ -1983,7 +2003,7 @@
                     }
                     if (eyes) eyes.textContent = '😐😐';
                     if (mouth) mouth.textContent = '😕';
-                } else {
+            } else {
                     if (avatar && !avatar.classList.contains('pou-avatar-dog') && 
                         !avatar.classList.contains('pou-avatar-cat') && 
                         !avatar.classList.contains('pou-avatar-bird') && 
@@ -2066,7 +2086,7 @@
             playPetSound('dress'); // Sonido de vestir
             
             try {
-                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPetId}/dress`, {
+                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPet.id}/dress`, {
                     method: 'POST',
                     body: JSON.stringify({ ropa: clothingType })
                 });
@@ -2342,7 +2362,7 @@
             playPetSound('eat'); // Sonido de comer
             
             try {
-                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPetId}/feed`, {
+                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPet.id}/feed`, {
                     method: 'POST'
                 });
                 
@@ -2376,7 +2396,7 @@
             playPetSound('play'); // Sonido gamer de jugar
             
             try {
-                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPetId}/play`, {
+                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPet.id}/play`, {
                     method: 'POST'
                 });
                 
@@ -2400,7 +2420,7 @@
             playPetSound('walk'); // Sonido de caminar
             
             try {
-                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPetId}/walk`, {
+                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPet.id}/walk`, {
                     method: 'POST'
                 });
                 
@@ -2423,7 +2443,7 @@
             playPetSound('heal'); // Sonido mágico de curación
             
             try {
-                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPetId}/heal`, {
+                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPet.id}/heal`, {
                     method: 'POST'
                 });
                 
@@ -2447,7 +2467,7 @@
             playPetSound('revive'); // Sonido épico de revivir
             
             try {
-                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPetId}/revive`, {
+                const updatedPet = await apiRequest(`/virtual/pets/${currentVirtualPet.id}/revive`, {
                     method: 'POST'
                 });
                 
